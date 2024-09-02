@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -10,8 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -23,13 +20,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
-import { EllipsisVertical, Trash } from "lucide-react";
-import { useState } from "react";
+import {
+  EllipsisVertical,
+  FileText,
+  GanttChartIcon,
+  ImageIcon,
+  Trash,
+} from "lucide-react";
+import { ReactNode, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
@@ -88,6 +90,12 @@ function FileCardAction({ file }: { file: Doc<"files"> }) {
 }
 
 export function FileCard({ file }: { file: Doc<"files"> }) {
+  const typeIcons = {
+    image: <ImageIcon />,
+    pdf: <FileText />,
+    csv: <GanttChartIcon />,
+  } as Record<Doc<"files">["type"], ReactNode>;
+
   return (
     <Card>
       <CardHeader className="relative">
@@ -98,7 +106,7 @@ export function FileCard({ file }: { file: Doc<"files"> }) {
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        <p>{typeIcons[file.type]}</p>
       </CardContent>
       <CardFooter>
         <Button>Download</Button>

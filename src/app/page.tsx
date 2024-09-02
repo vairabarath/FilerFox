@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { UploadButton } from "./upload-button";
 import { FileCard } from "./file-cards";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
   const organization = useOrganization();
@@ -20,8 +21,15 @@ export default function Home() {
 
   return (
     <main className="container mx-auto pt-12">
+      {files === undefined && (
+        <div className="flex flex-col gap-3 w-full items-center mt-24">
+          <Loader2 className="h-32 w-32 animate-spin" />
+          <div>Loading...</div>
+        </div>
+      )}
+
       {files && files?.length === 0 && (
-        <div className="flex flex-col gap-3 w-full items-center mt-12">
+        <div className="flex flex-col gap-3 w-full items-center mt-24 ">
           <Image
             alt="An image for an empty page"
             width="200"

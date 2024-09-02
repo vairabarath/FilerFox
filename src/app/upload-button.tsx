@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Doc } from "../../convex/_generated/dataModel";
 
 //form schema
 const formSchema = z.object({
@@ -57,19 +58,28 @@ export function UploadButton() {
     if (!orgId) return;
     const postUrl = await generateUploadUrl();
 
+    const fileType = values.file[0].type;
+
     const result = await fetch(postUrl, {
       method: "POST",
-      headers: { "Content-Type": values.file[0].type },
+      headers: { "Content-Type": fileType },
       body: values.file[0],
     });
 
     const { storageId } = await result.json();
+
+    const types = {
+      "image/png": "image",
+      "application/pdf": "pdf",
+      "text/csv": "csv",
+    } as unknown as Record<string, Doc<"files">["type"]>;
 
     try {
       await createFile({
         name: values.title,
         fileId: storageId,
         orgId,
+        type: types[fileType],
       });
 
       form.reset();
