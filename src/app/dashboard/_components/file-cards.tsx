@@ -39,6 +39,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { Protect } from "@clerk/nextjs";
 
 function FileCardAction({
   file,
@@ -106,6 +107,7 @@ function FileCardAction({
             )}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          {/* <Protect role="org:admin"> */}
           <DropdownMenuItem
             onClick={() => setIsConfirmOpen(true)}
             className="flex  cursor-pointer gap-1 items-center text-red-600"
@@ -113,6 +115,7 @@ function FileCardAction({
             <Trash className="w-4 h-4" />
             Delete
           </DropdownMenuItem>
+          {/* </Protect> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
