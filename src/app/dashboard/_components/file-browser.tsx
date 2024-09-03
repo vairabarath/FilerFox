@@ -1,13 +1,15 @@
 "use client";
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { UploadButton } from "./upload-button";
 import { FileCard } from "./file-cards";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { FileIcon, HeartIcon, Loader2 } from "lucide-react";
 import { Search } from "./serach-bar";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function Placeholder() {
   return (
@@ -26,7 +28,7 @@ function Placeholder() {
   );
 }
 
-export default function Home() {
+export function FileBrowser({ title }: { title: string }) {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
@@ -41,7 +43,7 @@ export default function Home() {
   const isLoading = files === undefined;
 
   return (
-    <main className="container mx-auto pt-12">
+    <div className="w-full">
       {isLoading && (
         <div className="flex flex-col gap-3 w-full items-center mt-24">
           <Loader2 className="h-32 w-32 animate-spin" />
@@ -52,7 +54,7 @@ export default function Home() {
       {!isLoading && (
         <>
           <div className="flex justify-between mb-8">
-            <h1 className="text-4xl font-bold">Your files</h1>
+            <h1 className="text-4xl font-bold">{title}</h1>
             <Search query={query} setQuery={setQuery} />
             <UploadButton />
           </div>
@@ -66,6 +68,6 @@ export default function Home() {
           </div>
         </>
       )}
-    </main>
+    </div>
   );
 }

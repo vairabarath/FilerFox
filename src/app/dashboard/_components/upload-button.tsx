@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { useMutation } from "convex/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc } from "../../../../convex/_generated/dataModel";
 
 //form schema
 const formSchema = z.object({

@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Doc, Id } from "../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 
@@ -124,6 +124,7 @@ export function FileCard({
       </CardContent>
       <CardFooter className="relative">
         <Button
+          size={"sm"}
           className="absolute bottom-2 right-2 "
           onClick={() => {
             if (!file.url) return;
