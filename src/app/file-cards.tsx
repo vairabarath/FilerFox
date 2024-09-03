@@ -22,9 +22,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc, Id } from "../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import {
+  Download,
   EllipsisVertical,
   FileText,
   GanttChartIcon,
@@ -35,6 +36,7 @@ import { ReactNode, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 function FileCardAction({ file }: { file: Doc<"files"> }) {
   const deleteFile = useMutation(api.files.deleteFile);
@@ -89,7 +91,11 @@ function FileCardAction({ file }: { file: Doc<"files"> }) {
   );
 }
 
-export function FileCard({ file }: { file: Doc<"files"> }) {
+export function FileCard({
+  file,
+}: {
+  file: Doc<"files"> & { url: string | null };
+}) {
   const typeIcons = {
     image: <ImageIcon />,
     pdf: <FileText />,
@@ -99,17 +105,33 @@ export function FileCard({ file }: { file: Doc<"files"> }) {
   return (
     <Card>
       <CardHeader className="relative">
-        <CardTitle>{file.name}</CardTitle>
+        <CardTitle className="flex gap-2 items-center">
+          <p>{typeIcons[file.type]}</p>
+          {file.name}
+        </CardTitle>
         <div className="absolute top-2 right-2">
           <FileCardAction file={file} />
         </div>
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
-      <CardContent>
-        <p>{typeIcons[file.type]}</p>
+      <CardContent className="flex justify-center items-center h-[200px] mb-6">
+        {file.type === "image" && file.url && (
+          <Image alt={file.name} width={200} height={200} src={file.url} />
+        )}
+
+        {file.type === "pdf" && <FileText className="w-20 h-20" />}
+        {file.type === "csv" && <GanttChartIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter>
-        <Button>Download</Button>
+      <CardFooter className="relative">
+        <Button
+          className="absolute bottom-2 right-2 "
+          onClick={() => {
+            if (!file.url) return;
+            window.open(file.url, "_blank");
+          }}
+        >
+          <Download />
+        </Button>
       </CardFooter>
     </Card>
   );

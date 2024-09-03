@@ -68,11 +68,13 @@ export function UploadButton() {
 
     const { storageId } = await result.json();
 
+    console.log(storageId);
+
     const types = {
       "image/png": "image",
       "application/pdf": "pdf",
       "text/csv": "csv",
-    } as unknown as Record<string, Doc<"files">["type"]>;
+    } as Record<string, Doc<"files">["type"]>;
 
     try {
       await createFile({
@@ -124,6 +126,7 @@ export function UploadButton() {
             Every one in this organization will access this file
           </DialogDescription>
         </DialogHeader>
+
         <div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

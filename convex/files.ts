@@ -9,6 +9,7 @@ export const generateUploadUrl = mutation(async (ctx) => {
   if (!identity)
     throw new ConvexError("you must be logged in to create a file");
 
+  console.log(ctx.storage.generateUploadUrl());
   return await ctx.storage.generateUploadUrl();
 });
 
@@ -63,6 +64,8 @@ export const createFile = mutation({
 export const getFiles = query({
   args: {
     orgId: v.string(),
+    query: v.optional(v.string()),
+    type: v.optional(fileTypes),
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
@@ -77,10 +80,31 @@ export const getFiles = query({
 
     if (!hasAccess) return [];
 
-    return ctx.db
+    let files = await ctx.db
       .query("files")
       .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    const query = args.query;
+
+    if (query) {
+      files = files.filter((file) =>
+        file.name.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    if (args.type) {
+      files = files.filter((file) => file.type === args.type);
+    }
+
+    const fileWithUrl = await Promise.all(
+      files.map(async (file) => ({
+        ...file,
+        url: await ctx.storage.getUrl(file.fileId),
+      }))
+    );
+
+    return fileWithUrl;
   },
 });
 
