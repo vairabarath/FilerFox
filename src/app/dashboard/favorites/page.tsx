@@ -3,7 +3,7 @@ import { FileBrowser } from "../_components/file-browser";
 export default function Favorites() {
   return (
     <div>
-      <FileBrowser title="Favorite files" favorites />
+      <FileBrowser title="Favorite files" favoritesOnly />
     </div>
   );
 }

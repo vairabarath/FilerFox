@@ -21,14 +21,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Doc } from "../../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import {
   Download,
   EllipsisVertical,
   FileText,
   GanttChartIcon,
+  HeartCrackIcon,
   HeartIcon,
   ImageIcon,
   Trash,
@@ -40,7 +40,13 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 
-function FileCardAction({ file }: { file: Doc<"files"> }) {
+function FileCardAction({
+  file,
+  isFavorited,
+}: {
+  file: Doc<"files">;
+  isFavorited: boolean;
+}) {
   const deleteFile = useMutation(api.files.deleteFile);
   const toggleFavorite = useMutation(api.files.toggleFavorite);
   const { toast } = useToast();
@@ -89,8 +95,15 @@ function FileCardAction({ file }: { file: Doc<"files"> }) {
             }}
             className="flex  cursor-pointer gap-1 items-center"
           >
-            <HeartIcon className="w-4 h-4" />
-            Favorite
+            {isFavorited ? (
+              <div className="flex gap-1 items-center">
+                <HeartCrackIcon className="w-4 h-4" /> Unfavorite
+              </div>
+            ) : (
+              <div className="flex gap-1 items-center">
+                <HeartIcon className="w-4 h-4" /> Favorite
+              </div>
+            )}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -108,14 +121,20 @@ function FileCardAction({ file }: { file: Doc<"files"> }) {
 
 export function FileCard({
   file,
+  favorites,
 }: {
   file: Doc<"files"> & { url: string | null };
+  favorites: Doc<"favorites">[];
 }) {
   const typeIcons = {
     image: <ImageIcon />,
     pdf: <FileText />,
     csv: <GanttChartIcon />,
   } as Record<Doc<"files">["type"], ReactNode>;
+
+  const isFavorited = favorites.some(
+    (favorite) => favorite.fileId === file._id
+  );
 
   return (
     <Card>
@@ -125,7 +144,7 @@ export function FileCard({
           {file.name}
         </CardTitle>
         <div className="absolute top-2 right-2">
-          <FileCardAction file={file} />
+          <FileCardAction isFavorited={isFavorited} file={file} />
         </div>
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
