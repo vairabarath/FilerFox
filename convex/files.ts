@@ -1,5 +1,11 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  mutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { getUser } from "./users";
 import { fileTypes } from "./schema";
 import { Id } from "./_generated/dataModel";
@@ -62,6 +68,7 @@ export const createFile = mutation({
       name: args.name,
       type: args.type,
       fileId: args.fileId,
+      userId: hasAccess.user._id,
       orgId: args.orgId,
     });
   },
@@ -73,6 +80,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     type: v.optional(fileTypes),
     favorites: v.optional(v.boolean()),
+    deletedOnly: v.optional(v.boolean()),
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
@@ -91,7 +99,6 @@ export const getFiles = query({
         file.name.toLowerCase().includes(query.toLowerCase())
       );
     }
-
     if (args.favorites) {
       const favorites = await ctx.db
         .query("favorites")
@@ -103,6 +110,12 @@ export const getFiles = query({
       files = files.filter((file) =>
         favorites.some((favorite) => favorite.fileId === file._id)
       );
+    }
+
+    if (args.deletedOnly) {
+      files = files.filter((file) => file.shouldBeDeleted);
+    } else {
+      files = files.filter((file) => !file.shouldBeDeleted);
     }
 
     if (args.type) {
@@ -117,6 +130,24 @@ export const getFiles = query({
     );
 
     return fileWithUrl;
+  },
+});
+
+export const deleteAllFiles = internalMutation({
+  args: {},
+  async handler(ctx) {
+    let files = await ctx.db
+      .query("files")
+      .withIndex("shouldBeDeleted", (q) => q.eq("shouldBeDeleted", true))
+      .collect();
+
+    await Promise.all(
+      files.map(async (file) => {
+        await ctx.storage.delete(file.fileId);
+        return await ctx.db.delete(file._id);
+      })
+    );
+    // await ctx.db.delete(args.fileId);
   },
 });
 
@@ -139,7 +170,36 @@ export const deleteFile = mutation({
       throw new ConvexError("only admin have access to delete a file");
     }
 
-    await ctx.db.delete(args.fileId);
+    // await ctx.db.delete(args.fileId);
+    await ctx.db.patch(args.fileId, {
+      shouldBeDeleted: true,
+    });
+  },
+});
+
+export const RestoreFile = mutation({
+  args: {
+    fileId: v.id("files"),
+  },
+  async handler(ctx, args) {
+    const access = await hasAccessToFile(ctx, args.fileId);
+
+    if (!access) {
+      throw new ConvexError("you must be logged in to delete a file");
+    }
+
+    const isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
+
+    if (!isAdmin) {
+      throw new ConvexError("only admin have access to delete a file");
+    }
+
+    // await ctx.db.delete(args.fileId);
+    await ctx.db.patch(args.fileId, {
+      shouldBeDeleted: false,
+    });
   },
 });
 

@@ -31,9 +31,11 @@ function Placeholder() {
 export function FileBrowser({
   title,
   favoritesOnly,
+  deletedOnly,
 }: {
   title: string;
   favoritesOnly?: boolean;
+  deletedOnly?: boolean;
 }) {
   const organization = useOrganization();
   const user = useUser();
@@ -52,7 +54,7 @@ export function FileBrowser({
 
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favoritesOnly } : "skip"
+    orgId ? { orgId, query, favorites: favoritesOnly, deletedOnly } : "skip"
   );
 
   const isLoading = files === undefined;
@@ -76,7 +78,7 @@ export function FileBrowser({
 
           {files?.length === 0 && <Placeholder />}
 
-          <div className="grid grid-cols-5 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {files?.map((file) => {
               return (
                 <FileCard
