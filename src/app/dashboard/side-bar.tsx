@@ -19,7 +19,7 @@ export function SideBar() {
             pathname.includes("/dashboard/files") && "text-blue-600"
           )}
         >
-          <HeartIcon />
+          <FileIcon />
           Files
         </Button>
       </Link>
@@ -32,7 +32,7 @@ export function SideBar() {
             pathname.includes("/dashboard/favorites") && "text-blue-600"
           )}
         >
-          <FileIcon />
+          <HeartIcon />
           Favorites
         </Button>
       </Link>
