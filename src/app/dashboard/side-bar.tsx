@@ -15,8 +15,8 @@ export function SideBar() {
         <Button
           variant={"link"}
           className={clsx(
-            "flex gap-2",
-            pathname.includes("/dashboard/files") && "text-blue-600"
+            "flex gap-2 text-black",
+            pathname.includes("/dashboard/files") && "text-primary"
           )}
         >
           <FileIcon />
@@ -28,8 +28,8 @@ export function SideBar() {
         <Button
           variant={"link"}
           className={clsx(
-            "flex gap-2",
-            pathname.includes("/dashboard/favorites") && "text-blue-600"
+            "flex gap-2  text-black",
+            pathname.includes("/dashboard/favorites") && "text-primary"
           )}
         >
           <HeartIcon />
@@ -41,8 +41,8 @@ export function SideBar() {
         <Button
           variant={"link"}
           className={clsx(
-            "flex gap-2",
-            pathname.includes("/dashboard/trash") && "text-blue-600"
+            "flex gap-2  text-black",
+            pathname.includes("/dashboard/trash") && "text-primary"
           )}
         >
           <Trash2Icon />

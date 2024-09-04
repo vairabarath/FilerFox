@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
-import { FileText, GanttChartIcon, ImageIcon } from "lucide-react";
+import { FileText, GanttChartIcon, ImageIcon, UploadIcon } from "lucide-react";
 import { ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -59,7 +59,7 @@ export function FileCard({
           {userProfile?.name}
         </div>
         <div className="text-xs">
-          Uploaded on {formatRelative(new Date(file._creationTime), new Date())}
+          {formatRelative(new Date(file._creationTime), new Date())}
         </div>
       </CardFooter>
     </Card>

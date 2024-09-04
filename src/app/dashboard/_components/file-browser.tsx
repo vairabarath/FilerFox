@@ -6,7 +6,7 @@ import { UploadButton } from "./upload-button";
 import { FileCard } from "./file-cards";
 import Image from "next/image";
 import { GridIcon, Loader2, RowsIcon } from "lucide-react";
-import { Search } from "./serach-bar";
+import { Search } from "./search-bar";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 
 function Placeholder() {
   return (
-    <div className="flex flex-col gap-3 w-full items-center mt-24 ">
+    <div className="flex flex-col gap-3 w-full items-center mt-24 animate-slideUp ">
       <Image
         alt="An image for an empty page"
         width="200"
@@ -52,6 +52,7 @@ export function FileBrowser({
   const user = useUser();
   const [query, setQuery] = useState("");
   const [type, setType] = useState<Doc<"files">["type"] | "all">("all");
+  const [activeTab, setActiveTab] = useState("grid");
 
   //form definition
 
@@ -97,15 +98,28 @@ export function FileBrowser({
         <UploadButton />
       </div>
 
-      <Tabs defaultValue="grid">
+      <Tabs defaultValue="grid" onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
           <TabsList className="mb-2">
-            <TabsTrigger value="grid" className="flex gap-2 items-center">
-              <GridIcon />
+            <TabsTrigger
+              value="grid"
+              className="flex gap-2 items-center"
+              onClick={() => setActiveTab("grid")}
+            >
+              <GridIcon
+                className={` ${activeTab === "grid" ? "text-blue-500" : ""}`}
+              />
               Grid
             </TabsTrigger>
-            <TabsTrigger value="table" className="flex gap-2 items-center">
-              <RowsIcon /> List
+            <TabsTrigger
+              value="list"
+              className="flex gap-2 items-center"
+              onClick={() => setActiveTab("list")}
+            >
+              <RowsIcon
+                className={` ${activeTab === "list" ? "text-blue-500" : ""}`}
+              />{" "}
+              List
             </TabsTrigger>
           </TabsList>
 
@@ -138,14 +152,17 @@ export function FileBrowser({
         )}
 
         <TabsContent value="grid">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {modifiedFiles?.map((file) => {
               return <FileCard key={file._id} file={file} />;
             })}
           </div>
         </TabsContent>
-        <TabsContent value="table">
-          <DataTable columns={columns} data={modifiedFiles} />
+
+        <TabsContent value="list">
+          {files?.length !== 0 && (
+            <DataTable columns={columns} data={modifiedFiles} />
+          )}
         </TabsContent>
       </Tabs>
 
