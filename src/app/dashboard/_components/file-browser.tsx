@@ -1,4 +1,5 @@
 "use client";
+
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { api } from "../../../../convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -24,14 +25,14 @@ import { Label } from "@/components/ui/label";
 
 function Placeholder() {
   return (
-    <div className="flex flex-col gap-3 w-full items-center mt-24 animate-slideUp ">
+    <div className="flex flex-col gap-3 w-full items-center mt-24 animate-slideUp px-4">
       <Image
         alt="An image for an empty page"
         width="200"
         height="200"
         src="/empty.svg"
       />
-      <div className="text-2xl font-bold">
+      <div className="text-2xl font-bold text-center">
         You have no files, upload one now
       </div>
       <UploadButton />
@@ -54,12 +55,11 @@ export function FileBrowser({
   const [type, setType] = useState<Doc<"files">["type"] | "all">("all");
   const [activeTab, setActiveTab] = useState("grid");
 
-  //form definition
-
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id;
   }
+
   const favorites = useQuery(
     api.files.getAllFavorites,
     orgId ? { orgId } : "skip"
@@ -89,18 +89,21 @@ export function FileBrowser({
     })) ?? [];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">{title}</h1>
+    <div className="px-4 md:px-8">
+      <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-8 gap-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-center md:text-left">
+          {title}
+        </h1>
 
-        <Search query={query} setQuery={setQuery} />
-
-        <UploadButton />
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <Search query={query} setQuery={setQuery} />
+          <UploadButton />
+        </div>
       </div>
 
       <Tabs defaultValue="grid" onValueChange={setActiveTab}>
-        <div className="flex justify-between items-center">
-          <TabsList className="mb-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <TabsList className="mb-2 md:mb-0">
             <TabsTrigger
               value="grid"
               className="flex gap-2 items-center"
@@ -131,7 +134,10 @@ export function FileBrowser({
                 setType(newType as any);
               }}
             >
-              <SelectTrigger id="type-select" className="w-[180px]">
+              <SelectTrigger
+                id="type-select"
+                className="w-[150px] md:w-[180px]"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -152,7 +158,7 @@ export function FileBrowser({
         )}
 
         <TabsContent value="grid">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {modifiedFiles?.map((file) => {
               return <FileCard key={file._id} file={file} />;
             })}
